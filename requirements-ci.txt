@@ -1,0 +1,3 @@
+# MeshContract v0.2.0, pinned to an immutable source commit.
+PyYAML==6.0.2
+git+https://github.com/Ikonido/MeshContract.git@57af4fe645d4963d0d0d5952334bd1605f6f376c

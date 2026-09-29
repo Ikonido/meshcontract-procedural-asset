@@ -1,0 +1,53 @@
+name: MeshContract quality gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  asset-quality-gate:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+
+      - name: Install pinned MeshContract
+        run: python -m pip install --disable-pip-version-check -r requirements-ci.txt
+
+      - name: Check reproducibility
+        run: |
+          # Two independent generations must match each other and the committed asset.obj.
+          python scripts/check_reproducibility.py
+          python generate_mesh.py
+          git diff --exit-code -- asset.obj
+
+      - name: Generate assets and run the quality gate
+        shell: bash
+        run: |
+          work_dir="$RUNNER_TEMP/meshcontract-demo"
+          mkdir -p "$work_dir"
+
+          python generate_mesh.py --variant valid --output "$work_dir/asset.obj"
+          python generate_mesh.py --variant invalid --output "$work_dir/invalid_asset.obj"
+          python generate_mesh.py --variant regression --output "$work_dir/regression_asset.obj"
+          python scripts/verify_quality_gate.py \
+            "$work_dir/asset.obj" \
+            "$work_dir/invalid_asset.obj" \
+            "$work_dir/regression_asset.obj"
+
+      - name: Run the demo pipeline
+        run: python scripts/demo_pipeline.py
