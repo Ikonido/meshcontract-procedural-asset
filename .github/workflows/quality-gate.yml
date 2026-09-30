@@ -28,6 +28,9 @@ jobs:
       - name: Install pinned MeshContract
         run: python -m pip install --disable-pip-version-check -r requirements-ci.txt
 
+      - name: Run regression tests
+        run: python -m unittest discover -s tests -v
+
       - name: Check reproducibility
         run: |
           # Two independent generations must match each other and the committed asset.obj.

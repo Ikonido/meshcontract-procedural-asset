@@ -215,7 +215,8 @@ class MeshBuilder:
                 b = first + next_path * tube_segments + tube_index
                 c = first + next_path * tube_segments + next_tube
                 d = first + path_index * tube_segments + next_tube
-                self.add_face((a, b, c, d))
+                # Mirroring X reverses orientation; keep both handles outward.
+                self.add_face((a, b, c, d) if side < 0 else (d, c, b, a))
 
     def export_obj(self, path: Path) -> None:
         lines = [
