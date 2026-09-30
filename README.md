@@ -84,11 +84,19 @@ correctly: MeshContract failing on the invalid and regression assets is the
 
 GitHub Actions (Python 3.11 and 3.12) checks that:
 
+- the geometry and gate regression tests pass, including outward-facing handles;
 - the generator output is reproducible and matches the committed `asset.obj`
   byte for byte (`scripts/check_reproducibility.py` and `git diff --exit-code`);
 - the baseline passes, and the invalid and regression assets exit with code 1;
 - the regression reports exactly `max_width_m_exceeded`;
 - the demo pipeline runs.
+
+The baseline JSON must report `status=pass`, no violations, and the documented
+vertex, face, triangle and dimension metrics. Failure JSON must report finite,
+consistent metrics and the width limit read from `contract.yaml`. Generator and
+validator subprocesses have a 30-second timeout with a diagnostic on failure.
+
+Run the regression tests locally with `python -m unittest discover -s tests -v`.
 
 ## Reproducibility
 

@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 from meshcontract_cli import (
+    BASELINE_METRICS,
     GateFailure,
     generate_twice,
     require_pass,
@@ -40,7 +41,10 @@ def main() -> int:
         print("  generation: PASS (asset present)")
         generate_twice("valid")
         print("  deterministic: PASS (two independent generations identical)")
-        require_pass(run_meshcontract(args.valid_asset), label="baseline")
+        require_pass(
+            run_meshcontract(args.valid_asset, json_output=True), label="baseline",
+            expected_metrics=BASELINE_METRICS,
+        )
         print("  MeshContract: PASS (exit code 0)")
 
         print("\nINVALID")

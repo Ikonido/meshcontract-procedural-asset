@@ -8,6 +8,7 @@ import tempfile
 from pathlib import Path
 
 from meshcontract_cli import (
+    BASELINE_METRICS,
     ROOT,
     GateFailure,
     generate,
@@ -35,7 +36,10 @@ def run_demo() -> None:
         for line in result.stdout.splitlines():
             if line.startswith(("Dimensions", "PASS")):
                 print(f"   {line}")
-        require_pass(result, label="baseline chest")
+        require_pass(
+            run_meshcontract(baseline, json_output=True), label="baseline chest",
+            expected_metrics=BASELINE_METRICS,
+        )
         print("   -> PASS (exit code 0)")
 
         print(f"3. Change one generator parameter: width x {REGRESSION_WIDTH_SCALE}")
